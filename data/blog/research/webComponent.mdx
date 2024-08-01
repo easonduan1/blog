@@ -1,0 +1,122 @@
+# web component
+
+## 为什么我们需要用到web component🫠
+
+       首先, 无论是web component或者是其它别的组件等都需要应用到我们的html文件中, 所以我们插入的东西势必会受到页面中其它css,js的影响, 从而最终影响我们的页面效果.
+
+这种场景经常出现在产品说, 好了现在我们需要给页面添加一个独立的组件,按钮…,我们要重新的
+
+独立的设计这个新组件,它的字体应该是这样, 更改一下默认行为…...
+
+这时候我们就需要想办法让这个组件独立与这个页面的其它部分, 而手动实现的话基本不能保证
+
+它的样式是否有相互的影响, 这十分不利于我们开发效率,因为我们根本没办法搞清楚哪些元素会被影响以及样式和逻辑会影响到哪些组件 !
+
+那么接下来 让我们一起实现一个可以满足样式,脚本隔离的组件吧!
+
+## 实现我们的自定义组件🤗
+
+首先,面对一个相较于陌生的概念, 我们不妨先来了解一下它的关键概念就是: 
+
+1. 自定义元素
+2. shadow dom
+
+我们逐一介绍🤒
+
+### 1. 自定义元素🤨
+
+什么是自定元素, 要搞清楚这个我们就需要了解什么叫做元素(这同时会引出什么叫做语义化元
+
+素)!
+
+所谓的元素是针对html文本而言, 它组成了整个html骨架,不妨来列举一些常见的元素,比如: 
+
+html,body,div,span, header…这些都是我们常见的元素, 它们有着自己的元素样式, 元素逻辑等, 而自定义元素就是我们可以在HTML元素的基础上自行的定义/覆盖属性或方法的元素,最终实现我们想要的元素.
+
+因此我们得到了一个重要的信息, 我们可以自己定义元素并且重新构造它! 所以, 我们不妨来试试:
+
+```jsx
+class MyComponent extends HTMLElement {
+
+}
+//这里我们就已经实现了一个元素, 一个很普通的元素
+//接下来我们来定义它,使用的是浏览器提供的api
+customElements.define('my-component', MyComponent)
+
+//方法一: api注册
+const myComp = document.createElement('my-component');
+document.body.appendChild(myComp)
+// 方法二: 页面中直接用
+<my-component></my-component>
+// 方法三: 通过new操作符实现一个自定义元素instance
+const myComp1 = new MyComponent() //这时创建了一个node节点
+document.body.appendChild(myComp1)
+```
+
+看,实现一个自定义元素很简单吧😆
+
+有了这个元素之后, 我们其实已经实现一个’半愣子‘的组件啦,接下来我们聚焦于浏览器的提供给我
+
+们实现样式隔离的api——shadowDOM
+
+### 2.shadowDOM🤩
+
+在通过第一步实现了一个我们自定义的元素之后, 我们只是拥有了一个自己定义的元素my-component, 但是它是没有内容的目前, 为了实现样式隔离, 我们就不能单纯的使用别的标签去套用,比如:
+
+```jsx
+<my-component>
+	   <button>
+				hello world
+    </button>
+</my-component>
+```
+
+这样做并不能实现我们的目标, 我们的想法是样式和逻辑和页面其他元素隔离, 我们希望定制这个button, 不让页面被的元素影响它,因此我们需要引入shadowdom.
+
+这里以更新后的web component为例, 我们使用声明式的办法来实现
+
+```jsx
+<my-component>
+  <template shadowrootmode="open">
+    <button>
+      我是隔离后的样式
+    </button>
+    <slot></slot>
+  </template>
+    <button>
+      我是没有被隔离
+    </button>
+</my-component>
+```
+
+就这么简单, 我们已经实现了一个web component!😉
+
+那么除了像我这样声明式的去写一个web component, 我们其实还可以使用原生js提供的api去创建我们想要的component.
+
+```jsx
+//这里我们以上面我们实现的自定义元素为例,向其中添加shadow dom
+class MyComponent extends HTMLElement {
+
+}
+
+customElements.define('my-component', MyComponent)
+const myComp1 = new MyComponent() 
+myComp1
+
+```
+
+## 如何发布web component为npm包
+
+参考: 
+
+https://justinfagnani.com/2019/11/01/how-to-publish-web-components-to-npm/
+
+## 开发效率提升
+
+lit,lit-html,lit-element
+
+## 存在的SSR问题
+
+## 如何同Shopify结合起来
+
+## 它的问题
